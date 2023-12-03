@@ -1,0 +1,84 @@
+{% extends 'core/base.html' %} {% block head_title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="w-full flex mt-5 justify-center">
+  <div class="bg-white w-5/12">
+    <h1 class="font-mono font-bold text-3xl text-center pb-5 pt-10 px-5">
+      {{ title }}
+    </h1>
+    <hr />
+    <form method="post" id="withdrawalForm" class="px-8 pt-6 pb-8 mb-4">
+      {% csrf_token %}
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="amount">
+          Amount
+        </label>
+        <input
+          class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight border rounded-md border-gray-500 focus:outline-none focus:shadow-outline"
+          name="amount"
+          id="amount"
+          type="number"
+          required
+          placeholder="Amount"
+        />
+      </div>
+      {% if form.amount.errors %} {% for error in form.amount.errors %}
+      <p class="text-red-600 text-sm italic pb-2">{{ error }}</p>
+      {% endfor %} {% endif %}
+
+      <div class="flex w-full justify-center">
+        <button
+          id="submitBtn"
+          class="bg-blue-900 text-white hover:text-blue-900 hover:bg-white border border-blue-900 font-bold px-4 py-2"
+          type="button"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("withdrawalForm");
+    const submitBtn = document.getElementById("submitBtn");
+
+    submitBtn.addEventListener("click", function () {
+      const amount = parseFloat(document.getElementById("amount").value);
+
+      // Additional client-side validation if needed
+      if (isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+      }
+
+      // Generate a random number (6 digits) for the reference
+      const randomReference = Math.floor(100000 + Math.random() * 900000);
+
+      // Create a unique transaction reference using timestamp and random number
+      const timestamp = new Date().getTime();
+      const transactionRef = `${timestamp}-${randomReference}`;
+
+      // Initialize Paystack inline
+      const handler = PaystackPop.setup({
+        key: "pk_test_ad0d3c063c276f77e9d9c2970666a3fdcc373a85",
+        email: "{{request.user}}",
+        amount: amount * 100,
+        ref: transactionRef,
+        callback: function (response) {
+          if (response.status === "success") {
+            form.submit();
+          } else {
+            alert("Payment failed. Please try again.");
+          }
+        },
+      });
+
+      handler.openIframe();
+    });
+  });
+</script>
+
+{% endblock %}
