@@ -1,6 +1,7 @@
 from .constants import WITHDRAWAL  # Assuming you have this constant defined
 import datetime
 from django import forms
+from payments.models import UserWallet
 from django.conf import settings
 from .models import Transaction
 from django.conf import settings
@@ -51,11 +52,13 @@ class TransactionDateRangeForm(forms.Form):
 
 class WithdrawForm(TransactionForm):
     def clean_amount(self):
+
         account = self.account
+        user_wallet = UserWallet.objects.get(user=account.user)
         min_withdraw_amount = getattr(settings, 'MINIMUM_WITHDRAWAL_AMOUNT', 0)
         max_withdraw_amount = account.account_type.maximum_withdrawal_amount
 
-        balance = self.account.balance
+        balance = user_wallet.balance
         amount = self.cleaned_data.get('amount')
 
         if amount < min_withdraw_amount:

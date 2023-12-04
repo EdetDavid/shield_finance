@@ -48,6 +48,28 @@
           />
         </div>
 
+        <h4>Make Transfer:</h4>
+        <div class="mb-4">
+          <label
+            for="account-number"
+            class="block text-sm font-medium text-gray-700"
+            >Account Number</label
+          >
+          <select
+            id="account-number"
+            name="account_number"
+            class="form-select mt-1 block w-full border rounded border-gray-500 focus:outline-none focus:ring focus:border-blue-300"
+            required
+          >
+            {% for item in user_bank_accounts %}
+            <option value="{{ item.account_no}}" selected>
+              {{ item.account_no}}
+            </option>
+            {% endfor %}
+            <option value="" selected></option>
+          </select>
+        </div>
+
         <button
           type="submit"
           class="btn btn-primary btn-block mb-4 bg-blue-500 text-white py-2 px-4 rounded"

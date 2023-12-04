@@ -61,7 +61,7 @@
       const timestamp = new Date().getTime();
       const transactionRef = `${timestamp}-${randomReference}`;
 
-      // Initialize Paystack inline
+      // Initialize Paystack dinline
       const handler = PaystackPop.setup({
         key: "pk_test_ad0d3c063c276f77e9d9c2970666a3fdcc373a85",
         email: "{{request.user}}",
